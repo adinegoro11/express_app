@@ -4,8 +4,16 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var fs = require('file-system');
+var mongoose = require('mongoose');
 
 var app = express();
+
+mongoose.set('strictQuery', false);
+const mongoDB = "mongodb://127.0.0.1/testing_express_apps";
+main().catch(err => console.log(err));
+async function main() {
+  await mongoose.connect(mongoDB);
+}
 
 fs.readdirSync('controllers').forEach(function (file) {
   if (file.substr(-3) == '.js') {

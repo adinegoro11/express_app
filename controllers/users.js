@@ -1,8 +1,13 @@
+var User = require('../models/User');
+
 module.exports.controller = (app) => {
-    app.get('/users',(req,res) => {
-        res.render('users', {
-            title: 'Users page from Controller',
-            description : 'Ini bagian deskripsi'
-        });
+    // get all users
+    app.get('/users', (req, res) => {
+        User.find({}, 'name email', function (error, users) {
+            if (error) {
+                console.log(error);
+            }
+            res.send(users);
+        })
     })
 }
