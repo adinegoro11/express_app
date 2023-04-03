@@ -3,15 +3,16 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node ./bin/www"
+    "serve": "nodemon app.js"
   },
   "dependencies": {
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
     "express": "^4.18.2",
-    "file-system": "^2.2.2",
+    "file-system": "^1.2.2",
     "http-errors": "~1.6.3",
-    "jade": "^1.9.2",
+    "jade": "^0.31.2",
+    "mongoose": "^7.0.3",
     "morgan": "~1.9.1",
     "nodemon": "^2.0.22",
     "pug": "^3.0.2"

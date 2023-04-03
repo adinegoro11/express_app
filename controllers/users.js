@@ -1,5 +1,8 @@
 module.exports.controller = (app) => {
     app.get('/users',(req,res) => {
-        res.render('index', {title: 'Users page from Controller'});
+        res.render('users', {
+            title: 'Users page from Controller',
+            description : 'Ini bagian deskripsi'
+        });
     })
 }
