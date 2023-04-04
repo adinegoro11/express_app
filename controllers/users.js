@@ -10,4 +10,29 @@ module.exports.controller = (app) => {
             res.send(users);
         })
     })
+    // get single user
+    app.get('/users/:id', (req, res) => {
+        User.findById(req.params.id, 'name email', function (error, user) {
+            if (error) {
+                console.log(error);
+            } else {
+                res.send(user);
+            }
+        })
+    })
+    // add a new user
+    app.post('/users', (req, res) => {
+        const newUser = new User({
+            name: req.body.name,
+            email: req.body.email
+        })
+
+        newUser.save(function (error, newUser) {
+            if (error) {
+                console.log(error);
+            } else {
+                res.send(newUser)
+            }
+        })
+    })
 }
