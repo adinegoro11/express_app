@@ -35,4 +35,31 @@ module.exports.controller = (app) => {
             }
         })
     })
+    // update a user
+    app.put('/users/:id', (req, res) => {
+        User.findById(req.params.id, 'name email', function (error, user) {
+            if (error) {
+                console.error(error);
+            }
+            user.name = req.body.name
+            user.email = req.body.email
+            user.save(function (error, user) {
+                if (error) {
+                    console.log(error);
+                } else {
+                    res.send(user)
+                }
+            })
+        })
+    })
+    // delete a user
+    app.delete('/users/:id', (req, res) => {
+        User.findByIdAndDelete(req.params.id, function (error, user) {
+            if (error) {
+                console.log(error);
+            } else {
+                res.send({ success: true })
+            }
+        })
+    })
 }
