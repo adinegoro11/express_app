@@ -62,4 +62,22 @@ module.exports.controller = (app) => {
             }
         })
     })
+    // register user
+    app.post('/users/register', (req, res) => {
+        const name = req.body.name;
+        const email = req.body.email;
+        const password = req.body.password;
+        const newUser = new User({
+            name,
+            email,
+            password,
+        });
+        User.createUser(newUser, (error, user) => {
+            if (error) {
+                res.send({error});
+            } else {
+                res.send({ user });
+            }
+        })
+    })
 }

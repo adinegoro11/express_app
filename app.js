@@ -8,6 +8,12 @@ var fs = require('file-system');
 var jwt = require('jsonwebtoken');
 var passport = require('passport');
 var mongoose = require('mongoose');
+const passportJWT = require('passport-jwt');
+const ExtractJwt = passportJWT.ExtractJwt;
+const JwtStrategy = passportJWT.Strategy;
+const jwtOptions = {}
+jwtOptions.jwtFromRequest = ExtractJwt.fromAuthHeaderWithScheme('jwt');
+jwtOptions.secretOrKey = 'th3$ecr3tKey';
 
 var app = express();
 
@@ -26,6 +32,7 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use(passport.initialize());
 app.use(express.static(path.join(__dirname, 'public')));
 
 fs.readdirSync('controllers').forEach(function (file) {
