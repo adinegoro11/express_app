@@ -29,7 +29,7 @@ module.exports.controller = (app) => {
 
         newUser.save(function (error, newUser) {
             if (error) {
-                console.log(error);
+                res.send(error);
             } else {
                 res.send(newUser)
             }
