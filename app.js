@@ -11,14 +11,15 @@ var mongoose = require('mongoose');
 const passportJWT = require('passport-jwt');
 const ExtractJwt = passportJWT.ExtractJwt;
 const JwtStrategy = passportJWT.Strategy;
+const config = require('./config/Config');
 const jwtOptions = {}
 jwtOptions.jwtFromRequest = ExtractJwt.fromAuthHeaderWithScheme('jwt');
-jwtOptions.secretOrKey = 'th3$ecr3tKey';
+jwtOptions.secretOrKey = config.SECRET_KEY;
 
 var app = express();
 
 mongoose.set('strictQuery', false);
-const mongoDB = "mongodb://127.0.0.1/testing_express_apps";
+const mongoDB = config.DB_CONFIG;
 main().catch(err => console.log(err));
 async function main() {
   await mongoose.connect(mongoDB);

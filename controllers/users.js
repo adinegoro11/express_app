@@ -1,4 +1,5 @@
 var User = require('../models/User');
+const config = require('../config/Config');
 
 const passportJWT = require('passport-jwt');
 const jwt = require('jsonwebtoken');
@@ -6,7 +7,7 @@ const { body, validationResult } = require('express-validator');
 const ExtractJwt = passportJWT.ExtractJwt;
 const jwtOptions = {};
 jwtOptions.jwtFromRequest = passportJWT.ExtractJwt.fromAuthHeaderWithScheme('jwt');
-jwtOptions.secretOrKey = 'th3$ecr3tKey';
+jwtOptions.secretOrKey = config.SECRET_KEY;
 
 module.exports.controller = (app) => {
     // get all users
