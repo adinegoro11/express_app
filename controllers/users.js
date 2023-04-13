@@ -2,6 +2,7 @@ var User = require('../models/User');
 
 const passportJWT = require('passport-jwt');
 const jwt = require('jsonwebtoken');
+const { body, validationResult } = require('express-validator');
 const ExtractJwt = passportJWT.ExtractJwt;
 const jwtOptions = {};
 jwtOptions.jwtFromRequest = passportJWT.ExtractJwt.fromAuthHeaderWithScheme('jwt');
@@ -43,22 +44,30 @@ module.exports.controller = (app) => {
         })
     })
     // update a user
-    app.put('/users/:id', (req, res) => {
-        User.findById(req.params.id, 'name email', function (error, user) {
-            if (error) {
-                console.error(error);
+    app.put(
+        '/users/:id',
+        body('name').isLength({ min: 3 }),
+        body('email').isEmail(),
+        (req, res) => {
+            const errors = validationResult(req);
+            if (!errors.isEmpty()) {
+                return res.status(400).json({ errors: errors.array() });
             }
-            user.name = req.body.name
-            user.email = req.body.email
-            user.save(function (error, user) {
+            User.findById(req.params.id, 'name email', function (error, user) {
                 if (error) {
-                    console.log(error);
-                } else {
-                    res.send(user)
+                    console.error(error);
                 }
+                user.name = req.body.name
+                user.email = req.body.email
+                user.save(function (error, user) {
+                    if (error) {
+                        console.log(error);
+                    } else {
+                        res.send(user)
+                    }
+                })
             })
         })
-    })
     // delete a user
     app.delete('/users/:id', (req, res) => {
         User.findByIdAndDelete(req.params.id, function (error, user) {
@@ -70,47 +79,62 @@ module.exports.controller = (app) => {
         })
     })
     // register user
-    app.post('/users/register', (req, res) => {
-        const name = req.body.name;
-        const email = req.body.email;
-        const password = req.body.password;
-        const newUser = new User({
-            name,
-            email,
-            password,
-        });
-        User.createUser(newUser, (error, user) => {
-            if (error) {
-                res.status(422).json({
-                    message: 'Something wrong, please try again after some time'
-                });
-            } else {
-                res.send({ user });
+    app.post(
+        '/users/register',
+        body('name').isLength({ min: 3 }),
+        body('email').isEmail(),
+        body('password').isLength({ min: 3 }),
+        (req, res) => {
+            const errors = validationResult(req);
+            if (!errors.isEmpty()) {
+                return res.status(400).json({ errors: errors.array() });
             }
+            const name = req.body.name;
+            const email = req.body.email;
+            const password = req.body.password;
+            const newUser = new User({
+                name,
+                email,
+                password,
+            });
+            User.createUser(newUser, (error, user) => {
+                if (error) {
+                    res.status(422).json({
+                        message: 'Something wrong, please try again after some time'
+                    });
+                } else {
+                    res.send({ user });
+                }
+            })
         })
-    })
     // login user
-    app.post('/users/login', (req,res) => {
-        if (req.body.email && req.body.password) {
+    app.post(
+        '/users/login',
+        body('email').isEmail(),
+        body('password').isLength({ min: 3 }),
+        (req, res) => {
+            const errors = validationResult(req);
+            if (!errors.isEmpty()) {
+                return res.status(400).json({ errors: errors.array() });
+            }
+
             const email = req.body.email;
             const password = req.body.password;
             User.getUserByEmail(email, (err, user) => {
                 if (!user) {
-                    res.status(404).json({message: 'User Not Found'});
-                } else {
-                    User.comparePassword(password, user.password, (error, isMatch) => {
-                        if (error) {
-                            throw error;
-                        } else if (isMatch) {
-                            const payload = {id: user.id};
-                            const token = jwt.sign(payload, jwtOptions.secretOrKey);
-                            res.json({message: 'ok', token});
-                        } else {
-                            res.status(401).json({message: 'Incorrect Password'});
-                        }
-                    })
+                    return res.status(404).json({ message: 'User Not Found' });
                 }
+                User.comparePassword(password, user.password, (error, isMatch) => {
+                    if (error) {
+                        throw error;
+                    } else if (isMatch) {
+                        const payload = { id: user.id };
+                        const token = jwt.sign(payload, jwtOptions.secretOrKey);
+                        return res.status(200).json({ message: 'ok', token });
+                    } else {
+                        return res.status(401).json({ message: 'Incorrect Password' });
+                    }
+                })
             })
-        }
-    })
+        })
 }
