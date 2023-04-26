@@ -34,6 +34,7 @@ describe('/GET dummy_test', () => {
     })
 })
 
+/* */
 describe('/GET movies', () => {
     it('it should send all movies', (done) => {
         var firstMovie = {

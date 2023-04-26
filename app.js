@@ -20,9 +20,9 @@ var app = express();
 
 const env = process.env.NODE_ENV || 'development';
 if (env === 'test') {
-  process.env.MONGODB_URI = config.DB_CONFIG;
-} else {
   process.env.MONGODB_URI = config.DB_TESTING;
+} else {
+  process.env.MONGODB_URI = config.DB_CONFIG;
 }
 
 mongoose.set('strictQuery', false);

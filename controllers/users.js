@@ -104,7 +104,10 @@ module.exports.controller = (app) => {
                         message: 'Something wrong, please try again after some time'
                     });
                 } else {
-                    res.send({ user });
+                    return res.status(201).json({
+                        message: "User successfully registered",
+                        user
+                    });
                 }
             })
         })
