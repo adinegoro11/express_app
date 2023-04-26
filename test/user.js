@@ -92,15 +92,95 @@ describe('Users API', () => {
 
             user.save((err, user) => {
                 chai.request(server)
-                .get('/users/' + user.id)
-                .send(user)
-                .end((err, response) => {
-                    response.should.have.status(200);
-                    response.body.should.have.property('_id').eql(user.id);
-                    response.body.should.have.property('name').eql(user.name);
-                    response.body.should.have.property('email').eql(user.email);
-                    done();
-                })
+                    .get('/users/' + user.id)
+                    .send(user)
+                    .end((err, response) => {
+                        response.should.have.status(200);
+                        response.body.should.have.property('_id').eql(user.id);
+                        response.body.should.have.property('name').eql(user.name);
+                        response.body.should.have.property('email').eql(user.email);
+                        done();
+                    })
+            })
+        })
+    })
+
+    describe('PUT /users/:id', () => {
+
+        it('It should successfully update a single user by ID', (done) => {
+            const user = new User({
+                name: 'Diego Milito',
+                email: 'diego@milito.com',
+                password: 'test1234'
+            });
+            user.save((err, user) => {
+                chai.request(server)
+                    .put('/users/' + user.id)
+                    .send({ name: 'Diego Maradona', email: 'diego@maradona.com' })
+                    .end((err, response) => {
+                        response.should.have.status(200);
+                        response.body.should.have.property('_id').eql(user.id);
+                        response.body.should.have.property('name').eql('Diego Maradona');
+                        response.body.should.have.property('email').eql('diego@maradona.com');
+                        done();
+                    })
+            })
+        })
+
+        it('Error by invalid email', (done) => {
+            const user = new User({
+                name: 'Diego Milito',
+                email: 'diego@milito.com',
+                password: 'test1234'
+            });
+            user.save((err, user) => {
+                chai.request(server)
+                    .put('/users/' + user.id)
+                    .send({ name: 'Diego Maradona', email: 'diego' })
+                    .end((err, response) => {
+                        response.should.have.status(400);
+                        response.body.should.be.a('object');
+                        response.body.should.have.property('errors');
+                        done();
+                    })
+            })
+        })
+
+        it('Error by invalid name', (done) => {
+            const user = new User({
+                name: 'Diego Milito',
+                email: 'diego@milito.com',
+                password: 'test1234'
+            });
+            user.save((err, user) => {
+                chai.request(server)
+                    .put('/users/' + user.id)
+                    .send({ name: null, email: 'diego@maradona.com' })
+                    .end((err, response) => {
+                        response.should.have.status(400);
+                        response.body.should.be.a('object');
+                        response.body.should.have.property('errors');
+                        done();
+                    })
+            })
+        })
+
+        it('Error by name less than 3', (done) => {
+            const user = new User({
+                name: 'Diego Milito',
+                email: 'diego@milito.com',
+                password: 'test1234'
+            });
+            user.save((err, user) => {
+                chai.request(server)
+                    .put('/users/' + user.id)
+                    .send({ name: 'ss', email: 'diego@maradona.com' })
+                    .end((err, response) => {
+                        response.should.have.status(400);
+                        response.body.should.be.a('object');
+                        response.body.should.have.property('errors');
+                        done();
+                    })
             })
         })
     })
