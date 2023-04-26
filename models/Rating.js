@@ -12,7 +12,11 @@ const RatingSchema = new Schema({
     rate: {
         type: Number,
         required: true,
-    }
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now
+    },
 })
 
 const Rating = mongoose.model("Rating", RatingSchema)

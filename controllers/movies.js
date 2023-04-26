@@ -78,4 +78,8 @@ module.exports.controller = (app) => {
                 res.status(201).json({ error: false, result: rating });
             })
         })
+    // send a dummy test
+    app.get('/dummy_test', function (req,res){
+        res.send({name: 'Frank Lampard'})
+    })
 }

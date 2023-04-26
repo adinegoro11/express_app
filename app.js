@@ -18,11 +18,17 @@ jwtOptions.secretOrKey = config.SECRET_KEY;
 
 var app = express();
 
+const env = process.env.NODE_ENV || 'development';
+if (env === 'test') {
+  process.env.MONGODB_URI = config.DB_CONFIG;
+} else {
+  process.env.MONGODB_URI = config.DB_TESTING;
+}
+
 mongoose.set('strictQuery', false);
-const mongoDB = config.DB_CONFIG;
 main().catch(err => console.log(err));
 async function main() {
-  await mongoose.connect(mongoDB);
+  await mongoose.connect(process.env.MONGODB_URI);
 }
 
 // view engine setup
@@ -59,5 +65,8 @@ app.use(function (err, req, res, next) {
   res.render('error');
 });
 
-app.listen(3000, function () { console.log('listening on 3000') })
-module.exports = app;
+const port = process.env.API_PORT || 8081;
+var server = app.listen(port, function () {
+  console.log(`listening on ${port}`)
+})
+module.exports = server;
