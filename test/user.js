@@ -185,4 +185,25 @@ describe('Users API', () => {
         })
     })
 
+    describe('DELETE /users/:id', () => {
+        it('It should successfully delete a user', (done) => {
+            const user = new User({
+                name: 'Xavi Hernandez',
+                email: 'xavi@hernandez.com',
+                password: 'test1234'
+            });
+
+            user.save((err, user) => {
+                chai.request(server)
+                    .delete('/users/' + user.id)
+                    .send(user)
+                    .end((err, response) => {
+                        response.should.have.status(200);
+                        response.body.should.have.property('message').eql('User successfully deleted');
+                        done();
+                    })
+            })
+        })
+    })
+
 });

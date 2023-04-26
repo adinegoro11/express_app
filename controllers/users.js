@@ -75,7 +75,7 @@ module.exports.controller = (app) => {
             if (error) {
                 console.log(error);
             } else {
-                res.send({ success: true })
+                return res.status(200).json({ message: 'User successfully deleted' });
             }
         })
     })
