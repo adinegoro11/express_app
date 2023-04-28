@@ -25,6 +25,22 @@ describe('Users API', () => {
                     done();
                 })
         })
+
+        it('It should show list users', (done) => {
+            User.insertMany([
+                { name: 'Xavi Hernandez', email: 'xavi@test.com', password: 'test1234' },
+                { name: 'Iniesta', email: 'iniesta@test.com', password: 'test1234' }
+            ]);
+
+            chai.request(server)
+                .get('/users')
+                .end((err, response) => {
+                    response.should.have.status(200);
+                    response.body.should.be.an('array');
+                    response.body.length.should.be.eq(2);
+                    done();
+                })
+        })
     })
 
     describe('POST /users/register', () => {
