@@ -11,13 +11,8 @@ jwtOptions.secretOrKey = config.SECRET_KEY;
 
 module.exports.controller = (app) => {
     // get all users
-    app.get('/users', (req, res) => {
-        User.find({}, 'name email', function (error, users) {
-            if (error) {
-                console.log(error);
-            }
-            res.send(users);
-        })
+    app.get('/users', paginatedResults(User, "name email createdAt"), (req, res) => {
+        res.status(200).json(res.paginatedResults)
     })
     // get single user
     app.get('/users/:id', (req, res) => {
@@ -141,4 +136,36 @@ module.exports.controller = (app) => {
                 })
             })
         })
+}
+
+function paginatedResults(model, columns) {
+    return async (req, res, next) => {
+        const page = parseInt(req.query.page)
+        const limit = parseInt(req.query.limit)
+
+        const startIndex = (page - 1) * limit
+        const endIndex = page * limit
+        const results = {}
+
+        if (endIndex < await model.countDocuments().exec()) {
+            results.next = {
+                page: page + 1,
+                limit: limit
+            }
+        }
+
+        if (startIndex > 0) {
+            results.previous = {
+                page: page - 1,
+                limit: limit
+            }
+        }
+        try {
+            results.results = await model.find({}, columns).limit(limit).skip(startIndex).exec()
+            res.paginatedResults = results
+            next()
+        } catch (e) {
+            res.status(500).json({ message: e.message })
+        }
+    }
 }
